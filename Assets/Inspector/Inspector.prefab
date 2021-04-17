@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3727125539840813114
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8022986518782582421}
+  - component: {fileID: -5387365712070302155}
+  m_Layer: 0
+  m_Name: Inspector
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8022986518782582421
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3727125539840813114}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 40.572784, y: 43.705124, z: -12.96875}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-5387365712070302155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3727125539840813114}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94b6fec635f8de94091881d837fed058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Board: {fileID: 8627324317594412252, guid: d4aa289c7ef26fe4e99b124002f7e8a6, type: 3}
+  BBishop: {fileID: 7481354494497141143, guid: bb78f04dc3e9f7e4bb5c97014b4013a9, type: 3}
+  BKing: {fileID: 4966735854136799942, guid: e4037db29083883418da5003331d8fc3, type: 3}
+  BKnight: {fileID: 2260332935694363348, guid: 074cb9c2fd3280041bb203fc15474510, type: 3}
+  BQueen: {fileID: 7677965503534358107, guid: ec0268243d06197409353b8e248bdffb, type: 3}
+  BRook: {fileID: 9217408816242452339, guid: 791cd1f7f24c55941b8c4fdebddb18ec, type: 3}
+  BPawn: {fileID: 3075770960323169634, guid: 97f49b14ed878fb41b1446857822473c, type: 3}
+  WBishop: {fileID: 1732868231988346708, guid: 544e9aac2b7295a4881f593c568f52cb, type: 3}
+  WKing: {fileID: 1312141075375651462, guid: 9fa44b54fdc538f41935e7baa21dca56, type: 3}
+  WKnight: {fileID: 6186178838988057457, guid: 1972574fb533c9b4aae6272dcd7338ac, type: 3}
+  WQueen: {fileID: 801949152357062499, guid: ec1cc703f8f92ae4c8a1de3727bbabec, type: 3}
+  WRook: {fileID: 6905651333741000606, guid: 0abe0d9d5f3cc474dbfe70c5c64d7b19, type: 3}
+  WPawn: {fileID: 7639116457878506987, guid: bfe88b6382ba6ef40a8cc5864f19f2ca, type: 3}
