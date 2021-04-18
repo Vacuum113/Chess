@@ -95,7 +95,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Piece: {fileID: 4449367032392816708, guid: 7ce10120d6873734487932c434fb37e7, type: 3}
-  CanMove: {fileID: 2100000, guid: df83d209f4a959a47badc75b97a1966a, type: 2}
-  CannotMove: {fileID: 2100000, guid: 1069143ebf7d3f24b8a645c6f9383aee, type: 2}
-  SelectedChess: {fileID: 2100000, guid: c7c6873907f3dc34fa23691a7c0bf5f2, type: 2}
+  CanMoveMaterial: {fileID: 2100000, guid: df83d209f4a959a47badc75b97a1966a, type: 2}
+  CannotMoveMaterial: {fileID: 2100000, guid: 1069143ebf7d3f24b8a645c6f9383aee, type: 2}
+  SelectedChessMaterial: {fileID: 2100000, guid: c7c6873907f3dc34fa23691a7c0bf5f2,
+    type: 2}
   Step: 9.91

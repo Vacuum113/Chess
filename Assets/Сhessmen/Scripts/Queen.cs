@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UPiece;
 
 namespace Сhessmen
 {
@@ -9,7 +10,7 @@ namespace Сhessmen
         {
         }
 
-        public override List<Variants> GetMoveVariants(int getRow, int getColumn, GameObject[,] pieceReference)
+        public override List<Variants> GetMoveVariants(int getRow, int getColumn, Piece[,] pieceReference)
         {
             throw new System.NotImplementedException();
         }

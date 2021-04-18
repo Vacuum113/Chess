@@ -1,21 +1,27 @@
 ﻿using UBoard;
+using UInspector;
 using UnityEngine;
+using Сhessmen;
 
 namespace UPiece
 {
     public class Piece : MonoBehaviour
     {
-        // Start is called before the first frame update
-        private GameObject _chessMan;
+        public Material CanMoveMaterial;
+        public Material CannotMoveMaterial;
+        public Material SelectedChessMaterial;
+
+        private ChessMan _chessMan;
         private int _row;
         private int _column;
-        
+        private bool? _canMove;
+        private bool? _selected;
+
         void Start()
         {
-        
+            Validate();
         }
-
-        // Update is called once per frame
+        
         void Update()
         {
             CheckClick();
@@ -23,30 +29,21 @@ namespace UPiece
         
         private void CheckClick()
         {
-            if (Input.GetMouseButtonDown(0))
+            var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            var hit = Physics2D.Raycast(mousePos, Vector2.zero, 20, 1 << LayerMask.NameToLayer("Default"));
+            if (hit)
             {
-                var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                var mousePos2D = new Vector2(mousePos.x, mousePos.y);
-
-                var hit = Physics2D.Raycast(mousePos2D, Vector2.zero, 20, 1 << LayerMask.NameToLayer("Default"));
-                var collider = gameObject.GetComponent<BoxCollider2D>();
-                var board = FindObjectOfType<Board>();
-                var selectedPiece = board.GetSelectedPiece();
-                if (hit.transform != null && hit.collider == collider && _chessMan != null)
+                if (Input.GetMouseButtonDown(0))
                 {
-                    board.SetSelectedPiece(gameObject);
-                }
-                else if (hit.transform != null && hit.collider == collider)
-                {
-                    if (selectedPiece != null && selectedPiece.transform != hit.transform)
-                        board.ResetSelect();
+                    if (hit.transform && hit.transform == transform)
+                        Inspector.Instance.TryUpdateState(this);
                 }
             }
         }
 
-        public void SetChessMan(GameObject chessMan) => _chessMan = chessMan;
+        public void SetChessMan(ChessMan chessMan) => _chessMan = chessMan;
     
-        public GameObject GetChessMan() => _chessMan;
+        public ChessMan GetChessMan() => _chessMan;
 
         public void SetRow(int row) => _row = row;
 
@@ -55,5 +52,46 @@ namespace UPiece
         public int GetRow() => _row;
 
         public int GetColumn() => _column;
+
+        public void SetSelectedMaterial()
+        {
+            _selected = true;
+            gameObject.GetComponent<Renderer>().material = SelectedChessMaterial;
+        }
+
+        public void SetCanMove(bool can)
+        {
+            _canMove = can;
+            gameObject.GetComponent<Renderer>().material = can ? CanMoveMaterial : CannotMoveMaterial;
+        }
+
+        public bool? GetCanMove() => _canMove;
+        
+        private void Validate()
+        {
+            if (CanMoveMaterial == null) {
+                Debug.LogError("assign the gameobject CanMove in the inspector before resuming");
+                UnityEditor.EditorApplication.isPlaying = false;
+            }
+
+            if (CannotMoveMaterial == null)
+            {
+                Debug.LogError("assign the gameobject CannotMove in the inspector before resuming");
+                UnityEditor.EditorApplication.isPlaying = false;
+            }
+            
+            if (SelectedChessMaterial == null)
+            {
+                Debug.LogError("assign the gameobject SelectedPiece in the inspector before resuming");
+                UnityEditor.EditorApplication.isPlaying = false;
+            }
+        }
+
+        public void ResetPiece(Material sharedMaterial)
+        {
+            _canMove = null;
+            _selected = null;
+            GetComponent<Renderer>().sharedMaterial = sharedMaterial;
+        }
     }
 }

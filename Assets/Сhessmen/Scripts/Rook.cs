@@ -12,12 +12,12 @@ namespace Сhessmen
         {
         }
 
-        public override List<Variants> GetMoveVariants(int row, int column, GameObject[,] pieceReference)
+        public override List<Variants> GetMoveVariants(int row, int column, Piece[,] pieceReference)
         {
             return GetRookMoveVariants(row, column, pieceReference);
         }
 
-        private List<Variants> GetRookMoveVariants(int row, int column, GameObject[,] pieceReference)
+        private List<Variants> GetRookMoveVariants(int row, int column, Piece[,] pieceReference)
         {
             var variants = new List<Variants>();
             variants.AddRange(GetRowVariants(row, column, pieceReference));
@@ -25,22 +25,22 @@ namespace Сhessmen
             return variants;
         }
 
-        private List<Variants> GetRowVariants(int row, int column, GameObject[,] pieceReference)
+        private List<Variants> GetRowVariants(int row, int column, Piece[,] pieceReference)
         {
             var variants = new List<Variants>();
-            for (var i = column; i >= 0 ; i--)
+            for (var i = column - 1; i >= 0 ; i--)
             {
-                var piece = pieceReference[row, i].GetComponent<Piece>();
-                if (piece.GetChessMan() != null)
+                var piece = pieceReference[row, i];
+                if (piece.GetChessMan())
                     break;
                     
                 variants.Add(new Variants(row, i));
             }
             
-            for (var i = column; i < 8 ; i++)
+            for (var i = column + 1; i < 8 ; i++)
             {
-                var piece = pieceReference[row, i].GetComponent<Piece>();
-                if (piece.GetChessMan() != null)
+                var piece = pieceReference[row, i];
+                if (piece.GetChessMan())
                     break;
                 
                 variants.Add(new Variants(row, i));
@@ -49,22 +49,22 @@ namespace Сhessmen
             return variants;
         }
         
-        private List<Variants> GetColumnVariants(int column, int row, GameObject[,] pieceReference)
+        private List<Variants> GetColumnVariants(int column, int row, Piece[,] pieceReference)
         {
             var variants = new List<Variants>();
-            for (var i = row + 1; i >= 0 && i > row ; i--)
+            for (var i = row - 1; i >= 0; i--)
             {
-                var piece = pieceReference[i, column].GetComponent<Piece>();
-                if (piece.GetChessMan() != null)
+                var piece = pieceReference[i, column];
+                if (piece.GetChessMan())
                     break;
                     
                 variants.Add(new Variants(i, column));
             }
             
-            for (var i = row + 1; i < 8 && i > row; i++)
+            for (var i = row + 1; i < 8; i++)
             {
-                var piece = pieceReference[i, column].GetComponent<Piece>();
-                if (piece.GetChessMan() != null)
+                var piece = pieceReference[i, column];
+                if (piece.GetChessMan())
                     break;
                 
                 variants.Add(new Variants(i, column));

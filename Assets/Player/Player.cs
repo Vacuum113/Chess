@@ -9,6 +9,8 @@ namespace UPlayer
         {
             _typePlayer = typePlayer;
         }
+
+        public TypePlayer GetTypePlayer() => _typePlayer;
     }
 
     public enum TypePlayer

@@ -1,58 +1,54 @@
 ﻿using System;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UPiece;
+using UPlayer;
 using Сhessmen;
 
 namespace UBoard
 {
     public class Board : MonoBehaviour
     {
-        private GameObject[,] _pieceReference;
+        private Piece[,] _pieceReference;
         public GameObject Piece;
         private const int RowCount = 8;
         private const int ColumnCount = 8;
-        public Material CanMove;
-        public Material CannotMove;
-        public Material SelectedChess;
         private readonly float _firstPiecePositionX = 0;
         private readonly float _firstPiecePositionY = 0;
         public float Step = 9.91f;
 
-        private GameObject SelectedPiece;
+        private Piece DefaultPiece;
+
+        private Piece SelectedPiece;
         // Start is called before the first frame update
         void Start()
         {
+            DefaultPiece = Instantiate(Piece,  new Vector3(-100, 0, -1), Quaternion.identity, new RectTransform()).GetComponent<Piece>();
             Validation();
         }
 
         // Update is called once per frame
         void Update()
         {
-            if (SelectedPiece != null)
+            if (SelectedPiece)
             {
-                var piece = SelectedPiece.GetComponent<Piece>();
-                piece.GetComponent<Renderer>().material = SelectedChess;
-                var chessMan = piece.GetChessMan().GetComponent<ChessMan>();
-                var variants = chessMan.GetMoveVariants(piece.GetRow(), piece.GetColumn(), _pieceReference);
-                foreach (var variant in variants)
+                if (Input.GetMouseButtonDown(0) && SelectedPiece)
                 {
-                    var pieceVariant = _pieceReference[variant.Row, variant.Column];
-                    
-                    pieceVariant.GetComponent<Renderer>().material = pieceVariant.GetComponent<Piece>().GetChessMan() != null ? CannotMove : CanMove;
+
+                    return;
                 }
             }
         }
 
-        public void SetPiece(GameObject chessMan, int column, int row)
+        public void SetPiece(GameObject chessMan, int column, int row, Player player)
         {
             var piece = _pieceReference[row, column];
             var pieceTransform = piece.transform.position;
             chessMan.transform.position = new Vector3(pieceTransform.x, pieceTransform.y, -2);
+            chessMan.GetComponent<ChessMan>().SetPlayer(player);
             var pieceObject = piece.GetComponent<Piece>();
-            pieceObject.SetRow(row);
-            pieceObject.SetColumn(column);
-            pieceObject.SetChessMan(chessMan);
+            pieceObject.SetChessMan(chessMan.GetComponent<ChessMan>());
         } 
         
         private void Validation()
@@ -61,23 +57,11 @@ namespace UBoard
                 Debug.LogError("assign the gameobject CanMove in the inspector before resuming");
                 UnityEditor.EditorApplication.isPlaying = false;
             }
-
-            
-            if (CanMove == null) {
-                Debug.LogError("assign the gameobject CanMove in the inspector before resuming");
-                UnityEditor.EditorApplication.isPlaying = false;
-            }
-
-            if (CannotMove == null)
-            {
-                Debug.LogError("assign the gameobject CannotMove in the inspector before resuming");
-                UnityEditor.EditorApplication.isPlaying = false;
-            }
         }
 
         public void InitialBoard()
         {
-            _pieceReference = new GameObject[RowCount, ColumnCount];
+            _pieceReference = new Piece[RowCount, ColumnCount];
             for (var i = 0; i < RowCount; i++)
             {
                 for (var y = 0; y < ColumnCount; y++)
@@ -87,17 +71,19 @@ namespace UBoard
             }
         }
         
-        private GameObject InitialPiece(int column, int row)
+        private Piece InitialPiece(int column, int row)
         {
-            var piece = Instantiate(Piece,  new Vector3(_firstPiecePositionX + column * Step, _firstPiecePositionY + row * Step, -1), Quaternion.identity, new RectTransform());
+            var piece = Instantiate(Piece,  new Vector3(_firstPiecePositionX + column * Step, _firstPiecePositionY + row * Step, -1), Quaternion.identity, new RectTransform()).GetComponent<Piece>();
             var position = piece.transform.position;
             position.Set(position.x, -2, position.z);
+            piece.SetRow(row);
+            piece.SetColumn(column);
             return piece;
         }
 
-        public void SetSelectedPiece(GameObject piece) => SelectedPiece = piece;
+        public void SetSelectedPiece(Piece piece) => SelectedPiece = piece;
 
-        public GameObject GetSelectedPiece() => SelectedPiece;
+        public Piece GetSelectedPiece() => SelectedPiece;
 
         public void ResetSelect()
         {
@@ -107,13 +93,39 @@ namespace UBoard
 
         private void ResetPiecesMaterial()
         {
-            var variantsPieces = _pieceReference.OfType<GameObject>().Where(p => p.GetComponent<Renderer>().material != null);
+            var variantsPieces = _pieceReference.OfType<Piece>().Where(p => p.GetComponent<Renderer>().material.name != DefaultPiece.GetComponent<Renderer>().material.name).ToList();
             foreach (var variantsPiece in variantsPieces)
             {
-                variantsPiece.GetComponent<Renderer>().material = null;
+                variantsPiece.ResetPiece(Piece.GetComponent<Renderer>().sharedMaterial);
             }
+        }
 
-            SelectedPiece.GetComponent<Renderer>().material = null;
+        public void MoveChessMan(Piece newPiece)
+        {
+            var selectedPiece = SelectedPiece.GetComponent<Piece>();
+            var selectedChessMan = selectedPiece.GetChessMan();
+            
+            newPiece.SetChessMan(selectedChessMan);
+            selectedPiece.SetChessMan(null);
+
+            var transformSelected = selectedChessMan.transform;
+            var newPiecePosition = newPiece.transform.position;
+            
+            transformSelected.position = new Vector3(newPiecePosition.x, newPiecePosition.y, transformSelected.position.z);
+        }
+
+        public void MarkCanMovePieces()
+        {
+            var piece = SelectedPiece.GetComponent<Piece>();
+            piece.SetSelectedMaterial();
+            var chessMan = piece.GetChessMan();
+            var variants = chessMan.GetMoveVariants(piece.GetRow(), piece.GetColumn(), _pieceReference);
+            
+            foreach (var variant in variants)
+            {
+                var pieceVariant = _pieceReference[variant.Row, variant.Column];
+                pieceVariant.SetCanMove(!pieceVariant.GetChessMan());
+            }
         }
     }
 }
