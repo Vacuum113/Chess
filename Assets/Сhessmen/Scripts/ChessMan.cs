@@ -11,7 +11,7 @@ namespace Сhessmen
     public abstract class ChessMan : MonoBehaviour
     {
         protected Player Player;
-        public abstract List<Variants> GetMoveVariants(int getRow, int getColumn, Piece[,] pieceReference);
+        public abstract List<Variants> GetMoveVariants(int getRow, int getColumn, Piece[,] pieces);
 
         public void SetPlayer(Player player)
         {

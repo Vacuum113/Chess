@@ -10,7 +10,7 @@ namespace UBoard
 {
     public class Board : MonoBehaviour
     {
-        private Piece[,] _pieceReference;
+        private Piece[,] _pieces;
         public GameObject Piece;
         private const int RowCount = 8;
         private const int ColumnCount = 8;
@@ -43,7 +43,7 @@ namespace UBoard
 
         public void SetPiece(GameObject chessMan, int column, int row, Player player)
         {
-            var piece = _pieceReference[row, column];
+            var piece = _pieces[row, column];
             var pieceTransform = piece.transform.position;
             chessMan.transform.position = new Vector3(pieceTransform.x, pieceTransform.y, -2);
             chessMan.GetComponent<ChessMan>().SetPlayer(player);
@@ -61,12 +61,12 @@ namespace UBoard
 
         public void InitialBoard()
         {
-            _pieceReference = new Piece[RowCount, ColumnCount];
+            _pieces = new Piece[RowCount, ColumnCount];
             for (var i = 0; i < RowCount; i++)
             {
                 for (var y = 0; y < ColumnCount; y++)
                 {
-                    _pieceReference[i, y] = InitialPiece(y, i);
+                    _pieces[i, y] = InitialPiece(y, i);
                 }
             }
         }
@@ -93,7 +93,7 @@ namespace UBoard
 
         private void ResetPiecesMaterial()
         {
-            var variantsPieces = _pieceReference.OfType<Piece>().Where(p => p.GetComponent<Renderer>().material.name != DefaultPiece.GetComponent<Renderer>().material.name).ToList();
+            var variantsPieces = _pieces.OfType<Piece>().Where(p => p.GetComponent<Renderer>().material.name != DefaultPiece.GetComponent<Renderer>().material.name).ToList();
             foreach (var variantsPiece in variantsPieces)
             {
                 variantsPiece.ResetPiece(Piece.GetComponent<Renderer>().sharedMaterial);
