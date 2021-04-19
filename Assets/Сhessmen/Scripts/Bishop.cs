@@ -6,13 +6,59 @@ namespace Сhessmen
 {
     public class Bishop : ChessMan
     {
-        private void Update()
+        public override List<Variants> GetMoveVariants(int getRow, int getColumn, Piece[,] pieces)
         {
-        }
+            var variants = new List<Variants>();
 
-        public override List<Variants> GetMoveVariants(int getRow, int getColumn, Piece[,] pieceReference)
-        {
-            throw new System.NotImplementedException();
+            for (var (r, c) = (getRow + 1, getColumn + 1); r < 8 && c < 8; r++, c++)
+            {
+                var piece = pieces[r, c];
+                if (piece.GetChessMan())
+                {
+                    variants.Add(new Variants(r, c));
+                    break;
+                }
+                
+                variants.Add(new Variants(r, c));
+            }
+            
+            for (var (r, c) = (getRow - 1, getColumn - 1); r >= 0 && c >= 0; r--, c--)
+            {
+                var piece = pieces[r, c];
+                if (piece.GetChessMan())
+                {
+                    variants.Add(new Variants(r, c));
+                    break;
+                }
+                
+                variants.Add(new Variants(r, c));
+            }
+            
+            for (var (r, c) = (getRow + 1, getColumn - 1); r < 8 && c >= 0; r++, c--)
+            {
+                var piece = pieces[r, c];
+                if (piece.GetChessMan())
+                {
+                    variants.Add(new Variants(r, c));
+                    break;
+                }
+                
+                variants.Add(new Variants(r, c));
+            }
+            
+            for (var (r, c) = (getRow - 1, getColumn + 1); r >= 0 && c < 8; r--, c++)
+            {
+                var piece = pieces[r, c];
+                if (piece.GetChessMan())
+                {
+                    variants.Add(new Variants(r, c));
+                    break;
+                }
+                
+                variants.Add(new Variants(r, c));
+            }
+
+            return variants;
         }
     }
 }

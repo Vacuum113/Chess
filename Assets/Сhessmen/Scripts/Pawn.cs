@@ -9,36 +9,50 @@ namespace Сhessmen
     public class Pawn : ChessMan
     {
         private bool _firstMove = true;
-        
-        public override List<Variants> GetMoveVariants(int getRow, int getColumn, Piece[,] pieceReference)
-        {
-            if (Player.GetTypePlayer() == TypePlayer.White)
-                return WhiteMove(getRow, getColumn, pieceReference);
-            else
-                return BlackMove(getRow, getColumn, pieceReference);
 
-        }
-
-        private List<Variants> BlackMove(int getRow, int getColumn, Piece[,] pieceReference)
+        public override List<Variants> GetMoveVariants(int getRow, int getColumn, Piece[,] pieces)
         {
-            if (_firstMove)
+            var variants = new List<Variants>();
+            if (getRow + Player.GetPositiveYMovement() < 8 && getRow + Player.GetPositiveYMovement() >= 0)
             {
-                _firstMove = false;
-                return new List<Variants> {new Variants(getRow - 1, getColumn), new Variants(getRow - 2, getColumn)};
+                var piece = pieces[getRow + Player.GetPositiveYMovement(), getColumn];
+                if (!piece.GetChessMan())
+                {
+                    if (getRow + Player.GetPositiveYMovement() < 8 && getRow + Player.GetPositiveYMovement() >= 0)
+                    {
+                        variants.Add(new Variants(getRow + Player.GetPositiveYMovement(), getColumn));
+                    }
+
+                    if (_firstMove && !pieces[getRow + 2 * Player.GetPositiveYMovement(), getColumn].GetChessMan())
+                    {
+                        variants.Add(new Variants(getRow + 2 * Player.GetPositiveYMovement(), getColumn));
+                    }
+                }
+
+                if (getRow + Player.GetPositiveYMovement() < 8 && getRow + Player.GetPositiveYMovement() >= 0 &&
+                    getColumn - 1 >= 0)
+                {
+                    var leftPiece = pieces[getRow + Player.GetPositiveYMovement(), getColumn - 1];
+                    if (leftPiece.GetChessMan())
+                    {
+                        variants.Add(new Variants(getRow + Player.GetPositiveYMovement(), getColumn - 1));
+                    }
+                }
+
+                if (getRow + Player.GetPositiveYMovement() < 8 && getRow + Player.GetPositiveYMovement() >= 0 &&
+                    getColumn + 1 < 8)
+                {
+                    var rightPiece = pieces[getRow + Player.GetPositiveYMovement(), getColumn + 1];
+                    if (rightPiece.GetChessMan())
+                    {
+                        variants.Add(new Variants(getRow + Player.GetPositiveYMovement(), getColumn + 1));
+                    }
+                }
             }
-            
-            return new List<Variants> {new Variants(getRow - 1, getColumn)};
+
+            return variants;
         }
 
-        private List<Variants> WhiteMove(int getRow, int getColumn, Piece[,] pieceReference)
-        {
-            if (_firstMove)
-            {
-                _firstMove = false;
-                return new List<Variants> {new Variants(getRow + 1, getColumn), new Variants(getRow + 2, getColumn)};
-            }
-            
-            return new List<Variants> {new Variants(getRow + 1, getColumn)};
-        }
+        public void SetFirstMoveMade() => _firstMove = false;
     }
 }

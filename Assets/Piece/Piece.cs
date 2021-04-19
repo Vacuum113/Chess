@@ -59,10 +59,16 @@ namespace UPiece
             gameObject.GetComponent<Renderer>().material = SelectedChessMaterial;
         }
 
-        public void SetCanMove(bool can)
+        public void SetCanMove()
         {
-            _canMove = can;
-            gameObject.GetComponent<Renderer>().material = can ? CanMoveMaterial : CannotMoveMaterial;
+            _canMove = true;
+            gameObject.GetComponent<Renderer>().material = CanMoveMaterial;
+        }
+        
+        public void SetCanDestroyChessMan()
+        {
+            _canMove = true;
+            gameObject.GetComponent<Renderer>().material = CannotMoveMaterial;
         }
 
         public bool? GetCanMove() => _canMove;
@@ -92,6 +98,11 @@ namespace UPiece
             _canMove = null;
             _selected = null;
             GetComponent<Renderer>().sharedMaterial = sharedMaterial;
+        }
+
+        public void DestroyChessMan()
+        {
+            Destroy(_chessMan.gameObject);
         }
     }
 }

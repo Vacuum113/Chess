@@ -104,9 +104,16 @@ namespace UBoard
         {
             var selectedPiece = SelectedPiece.GetComponent<Piece>();
             var selectedChessMan = selectedPiece.GetChessMan();
-            
+
+            if (newPiece.GetChessMan())
+            {
+                newPiece.DestroyChessMan();
+                newPiece.SetChessMan(null);
+            }
+
             newPiece.SetChessMan(selectedChessMan);
             selectedPiece.SetChessMan(null);
+            
 
             var transformSelected = selectedChessMan.transform;
             var newPiecePosition = newPiece.transform.position;
@@ -116,15 +123,33 @@ namespace UBoard
 
         public void MarkCanMovePieces()
         {
-            var piece = SelectedPiece.GetComponent<Piece>();
+            var piece = SelectedPiece;
             piece.SetSelectedMaterial();
             var chessMan = piece.GetChessMan();
-            var variants = chessMan.GetMoveVariants(piece.GetRow(), piece.GetColumn(), _pieceReference);
+            var variants = chessMan.GetMoveVariants(piece.GetRow(), piece.GetColumn(), _pieces);
+            var chessManType = chessMan.GetPlayer().GetTypePlayer();
             
             foreach (var variant in variants)
             {
-                var pieceVariant = _pieceReference[variant.Row, variant.Column];
-                pieceVariant.SetCanMove(!pieceVariant.GetChessMan());
+                var pieceVariant = _pieces[variant.Row, variant.Column];
+                var pieceChessMan = pieceVariant.GetChessMan();
+                if (!pieceChessMan)
+                {
+                    if (!pieceVariant.GetChessMan())
+                        pieceVariant.SetCanMove();
+                    else
+                        pieceVariant.SetCanDestroyChessMan();
+                }
+                else
+                {
+                    if (pieceVariant.GetChessMan()?.GetPlayer().GetTypePlayer() != chessManType)
+                    {
+                        if (!pieceVariant.GetChessMan())
+                            pieceVariant.SetCanMove();
+                        else
+                            pieceVariant.SetCanDestroyChessMan();
+                    }
+                }
             }
         }
     }

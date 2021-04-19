@@ -5,6 +5,7 @@ using UnityEngine;
 using UPiece;
 using UPlayer;
 using UState;
+using Сhessmen;
 
 namespace UInspector
 {
@@ -48,8 +49,8 @@ namespace UInspector
             Validation();
             _gameState = new State(GameState.None);
             
-            _bPlayer = new Player(TypePlayer.Black);
-            _wPlayer = new Player(TypePlayer.White);
+            _bPlayer = new Player(TypePlayer.Black, false);
+            _wPlayer = new Player(TypePlayer.White, true);
             _currentPlayer = _wPlayer;
             _otherPlayer = _bPlayer;
             
@@ -65,7 +66,7 @@ namespace UInspector
             BoardInstance.SetPiece(Instantiate(WBishop), 5, 0, _wPlayer);
             BoardInstance.SetPiece(Instantiate(WKnight), 6, 0, _wPlayer);
             BoardInstance.SetPiece(Instantiate(WRook), 7, 0, _wPlayer);
-            for (int i = 1; i < 8; i++)
+            for (int i = 0; i < 8; i++)
             {
                 BoardInstance.SetPiece(Instantiate(WPawn), i, 1, _wPlayer);
             }
@@ -173,6 +174,9 @@ namespace UInspector
         private void SelectToMove(Piece piece)
         {
             BoardInstance.MoveChessMan(piece);
+            if (piece.GetChessMan() is Pawn pawn)
+                pawn.SetFirstMoveMade();
+            
             BoardInstance.ResetSelect();
             SwapPlayers();
             _gameState.SetNoneState();
