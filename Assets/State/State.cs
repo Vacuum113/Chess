@@ -20,19 +20,11 @@
         {
             _gameState = GameState.Select;
         }
-
-        public void SetMoveState()
-        {
-            _gameState = GameState.Move;
-        }
     }
 
     public enum GameState
     {
         None,
         Select,
-        Selected,
-        Move,
-        Moved
     }
 }

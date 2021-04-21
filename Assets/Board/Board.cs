@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -41,14 +42,16 @@ namespace UBoard
             }
         }
 
-        public void SetPiece(GameObject chessMan, int column, int row, Player player)
+        public void SetPiece(GameObject chessManObject, int column, int row, Player player)
         {
             var piece = _pieces[row, column];
             var pieceTransform = piece.transform.position;
-            chessMan.transform.position = new Vector3(pieceTransform.x, pieceTransform.y, -2);
-            chessMan.GetComponent<ChessMan>().SetPlayer(player);
+            chessManObject.transform.position = new Vector3(pieceTransform.x, pieceTransform.y, -2);
+            var chessMan = chessManObject.GetComponent<ChessMan>();
+            chessMan.SetPlayer(player);
+            chessMan.SetPiece(piece);
             var pieceObject = piece.GetComponent<Piece>();
-            pieceObject.SetChessMan(chessMan.GetComponent<ChessMan>());
+            pieceObject.SetChessMan(chessMan);
         } 
         
         private void Validation()
@@ -112,6 +115,7 @@ namespace UBoard
             }
 
             newPiece.SetChessMan(selectedChessMan);
+            selectedChessMan.SetPiece(newPiece);
             selectedPiece.SetChessMan(null);
             
 
@@ -126,7 +130,7 @@ namespace UBoard
             var piece = SelectedPiece;
             piece.SetSelectedMaterial();
             var chessMan = piece.GetChessMan();
-            var variants = chessMan.GetMoveVariants(piece.GetRow(), piece.GetColumn(), _pieces);
+            var variants = chessMan.GetMoveVariants(piece.GetRow(), piece.GetColumn(), _pieces, false);
             var chessManType = chessMan.GetPlayer().GetTypePlayer();
             
             foreach (var variant in variants)
@@ -135,22 +139,24 @@ namespace UBoard
                 var pieceChessMan = pieceVariant.GetChessMan();
                 if (!pieceChessMan)
                 {
-                    if (!pieceVariant.GetChessMan())
-                        pieceVariant.SetCanMove();
-                    else
-                        pieceVariant.SetCanDestroyChessMan();
+                    pieceVariant.SetCanMove();
                 }
                 else
                 {
-                    if (pieceVariant.GetChessMan()?.GetPlayer().GetTypePlayer() != chessManType)
+                    if (pieceChessMan.GetPlayer().GetTypePlayer() != chessManType)
                     {
-                        if (!pieceVariant.GetChessMan())
-                            pieceVariant.SetCanMove();
-                        else
-                            pieceVariant.SetCanDestroyChessMan();
+                        pieceVariant.SetCanDestroyChessMan();
                     }
                 }
             }
         }
+
+        public IEnumerable<ChessMan> GetOtherAliveChessMen(TypePlayer typePlayer)
+        {
+            return _pieces.OfType<Piece>().Where(p => p.GetChessMan() != null && p.GetChessMan().GetPlayer().GetTypePlayer() != typePlayer)
+                .Select(p => p.GetChessMan());
+        }
+
+        public Piece[,] GetPieces() => _pieces;
     }
 }

@@ -29,7 +29,7 @@ namespace UInspector
         public GameObject WRook;
         public GameObject WPawn;
 
-        private Board BoardInstance;
+        public Board BoardInstance;
         
         private State _gameState;
         
@@ -103,9 +103,6 @@ namespace UInspector
                 case GameState.Select:
                     SelectState(piece);
                     break;
-                case GameState.Move:
-                    MoveState(piece);
-                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -114,7 +111,7 @@ namespace UInspector
         private void NoneState(Piece piece)
         {
             var chessMan = piece.GetChessMan();
-            if (chessMan != null && chessMan.GetPlayer().GetTypePlayer() != _currentPlayer.GetTypePlayer())
+            if (chessMan && chessMan.GetPlayer().GetTypePlayer() != _currentPlayer.GetTypePlayer())
                 return;
 
             NoneToSelect(piece);
@@ -136,7 +133,7 @@ namespace UInspector
         private void SelectToSelect(Piece piece)
         {
             var chessMan = piece.GetChessMan();
-            if (chessMan != null && chessMan.GetPlayer().GetTypePlayer() != _currentPlayer.GetTypePlayer())
+            if (chessMan && chessMan.GetPlayer().GetTypePlayer() != _currentPlayer.GetTypePlayer())
             {
                 BoardInstance.ResetSelect();
                 return;
@@ -144,14 +141,6 @@ namespace UInspector
             BoardInstance.ResetSelect();
             BoardInstance.SetSelectedPiece(piece);
             BoardInstance.MarkCanMovePieces();
-        }
-
-        private void MoveState(Piece piece)
-        {
-            // if ()
-            //     MoveToNone(piece, board);
-            // else
-            //     MoveToSelect(piece, board);
         }
 
         private void NoneToSelect(Piece piece)
@@ -182,17 +171,6 @@ namespace UInspector
             _gameState.SetNoneState();
         }
 
-        private void MoveToSelect(Piece piece)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void MoveToNone(Piece piece)
-        {
-            
-            _gameState.SetNoneState();
-        }
-        
         private void SwapPlayers()
         {
             var currentPlayer = _currentPlayer;

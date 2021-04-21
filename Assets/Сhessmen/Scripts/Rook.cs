@@ -12,7 +12,7 @@ namespace Сhessmen
         {
         }
 
-        public override List<Variants> GetMoveVariants(int row, int column, Piece[,] pieces)
+        public override List<Variants> GetMoveVariants(int row, int column, Piece[,] pieces, bool forKing)
         {
             return GetRookMoveVariants(row, column, pieces);
         }
@@ -30,24 +30,16 @@ namespace Сhessmen
             var variants = new List<Variants>();
             for (var i = column - 1; i >= 0 ; i--)
             {
-                var piece = pieces[row, i];
-                if (piece.GetChessMan())
-                {
-                    variants.Add(new Variants(row, i));
+                if(CanDestroy(pieces, row, i, variants))
                     break;
-                }
                     
                 variants.Add(new Variants(row, i));
             }
             
             for (var i = column + 1; i < 8 ; i++)
             {
-                var piece = pieces[row, i];
-                if (piece.GetChessMan())
-                {
-                    variants.Add(new Variants(row, i));
+                if(CanDestroy(pieces, row, i, variants))
                     break;
-                }
                 
                 variants.Add(new Variants(row, i));
             }
@@ -60,24 +52,16 @@ namespace Сhessmen
             var variants = new List<Variants>();
             for (var i = row - 1; i >= 0; i--)
             {
-                var piece = pieces[i, column];
-                if (piece.GetChessMan())
-                {
-                    variants.Add(new Variants(i, column));
+                if(CanDestroy(pieces, i, column, variants))
                     break;
-                }
                     
                 variants.Add(new Variants(i, column));
             }
             
             for (var i = row + 1; i < 8; i++)
             {
-                var piece = pieces[i, column];
-                if (piece.GetChessMan())
-                {
-                    variants.Add(new Variants(i, column));
+                if(CanDestroy(pieces, i, column, variants))
                     break;
-                }
                 
                 variants.Add(new Variants(i, column));
             }

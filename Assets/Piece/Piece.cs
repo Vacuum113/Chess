@@ -41,8 +41,11 @@ namespace UPiece
             }
         }
 
-        public void SetChessMan(ChessMan chessMan) => _chessMan = chessMan;
-    
+        public void SetChessMan(ChessMan chessMan)
+        {
+            _chessMan = chessMan;
+        }
+
         public ChessMan GetChessMan() => _chessMan;
 
         public void SetRow(int row) => _row = row;

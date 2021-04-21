@@ -7,7 +7,7 @@ namespace Сhessmen
 {
     public class Knight : ChessMan
     {
-        public override List<Variants> GetMoveVariants(int getRow, int getColumn, Piece[,] pieces)
+        public override List<Variants> GetMoveVariants(int getRow, int getColumn, Piece[,] pieces, bool forKing)
         {
             var variants = new List<Variants>();
             
