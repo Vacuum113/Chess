@@ -12,28 +12,28 @@ namespace Сhessmen
         {
         }
 
-        public override List<Variants> GetMoveVariants(int row, int column, Piece[,] pieces, bool forKing)
+        public override List<Variant> GetMoveVariants(int row, int column, Piece[,] pieces, bool forKing)
         {
             return GetRookMoveVariants(row, column, pieces);
         }
 
-        private List<Variants> GetRookMoveVariants(int row, int column, Piece[,] pieces)
+        private List<Variant> GetRookMoveVariants(int row, int column, Piece[,] pieces)
         {
-            var variants = new List<Variants>();
+            var variants = new List<Variant>();
             variants.AddRange(GetRowVariants(row, column, pieces));
             variants.AddRange(GetColumnVariants(column, row, pieces));
             return variants;
         }
 
-        private List<Variants> GetRowVariants(int row, int column, Piece[,] pieces)
+        private List<Variant> GetRowVariants(int row, int column, Piece[,] pieces)
         {
-            var variants = new List<Variants>();
+            var variants = new List<Variant>();
             for (var i = column - 1; i >= 0 ; i--)
             {
                 if(CanDestroy(pieces, row, i, variants))
                     break;
                     
-                variants.Add(new Variants(row, i));
+                variants.Add(new Variant(row, i));
             }
             
             for (var i = column + 1; i < 8 ; i++)
@@ -41,21 +41,21 @@ namespace Сhessmen
                 if(CanDestroy(pieces, row, i, variants))
                     break;
                 
-                variants.Add(new Variants(row, i));
+                variants.Add(new Variant(row, i));
             }
 
             return variants;
         }
         
-        private List<Variants> GetColumnVariants(int column, int row, Piece[,] pieces)
+        private List<Variant> GetColumnVariants(int column, int row, Piece[,] pieces)
         {
-            var variants = new List<Variants>();
+            var variants = new List<Variant>();
             for (var i = row - 1; i >= 0; i--)
             {
                 if(CanDestroy(pieces, i, column, variants))
                     break;
                     
-                variants.Add(new Variants(i, column));
+                variants.Add(new Variant(i, column));
             }
             
             for (var i = row + 1; i < 8; i++)
@@ -63,7 +63,7 @@ namespace Сhessmen
                 if(CanDestroy(pieces, i, column, variants))
                     break;
                 
-                variants.Add(new Variants(i, column));
+                variants.Add(new Variant(i, column));
             }
 
             return variants;

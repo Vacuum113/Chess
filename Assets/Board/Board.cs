@@ -124,7 +124,50 @@ namespace UBoard
             
             transformSelected.position = new Vector3(newPiecePosition.x, newPiecePosition.y, transformSelected.position.z);
         }
+        
+        private FakeMove FakeMoveChessMan(Piece newPiece)
+        {
+            var selectedPiece = SelectedPiece.GetComponent<Piece>();
+            var selectedChessMan = selectedPiece.GetChessMan();
 
+            var fakeMove = new FakeMove(newPiece, newPiece.GetChessMan(), SelectedPiece, selectedChessMan);
+
+            if (newPiece.GetChessMan())
+            {
+                newPiece.GetChessMan().SetPiece(null);
+                newPiece.SetChessMan(null);
+                fakeMove.SetDestroyed();
+            }
+
+            newPiece.SetChessMan(selectedChessMan);
+            selectedChessMan.SetPiece(newPiece);
+            selectedPiece.SetChessMan(null);
+
+            return fakeMove;
+        }
+
+        private void RestoreFakeMove(FakeMove fakeMove)
+        {
+            var selectedPiece = fakeMove.SelectedPiece;
+            var selectedChessMan = fakeMove.SelectedChessMan;
+            var newPiece = fakeMove.NewPiece;
+            var newPieceChessMan = fakeMove.NewPieceChessMan;
+            
+            selectedPiece.SetChessMan(selectedChessMan);
+            selectedChessMan.SetPiece(selectedPiece);
+
+            if (fakeMove.Destroyed)
+            {
+                newPieceChessMan.SetPiece(newPiece);
+                newPiece.SetChessMan(newPieceChessMan);
+            }
+            else
+            {
+                newPiece.SetChessMan(null);
+            }
+        }
+
+        //todo: Need to make more clearly
         public void MarkCanMovePieces()
         {
             var piece = SelectedPiece;
@@ -133,7 +176,34 @@ namespace UBoard
             var variants = chessMan.GetMoveVariants(piece.GetRow(), piece.GetColumn(), _pieces, false);
             var chessManType = chessMan.GetPlayer().GetTypePlayer();
             
+            var enemyChessMen = GetOtherAliveChessMen(chessManType).Where(c => c.GetType() != typeof(King)).ToArray();
+
+            var finalVariants = new List<Variant>();
+            
             foreach (var variant in variants)
+            {
+                var pieceVariant = _pieces[variant.Row, variant.Column];
+                var pieceChessMan = pieceVariant.GetChessMan();
+                if (pieceChessMan && pieceChessMan.GetPlayer().GetTypePlayer() == chessManType)
+                    continue;
+
+                var fakeMove = FakeMoveChessMan(_pieces[variant.Row, variant.Column]);
+                var kingPiece = _pieces.OfType<Piece>().First(p => p.GetChessMan() is King k && k.GetPlayer().GetTypePlayer() == chessMan.GetPlayer().GetTypePlayer());
+                var isShah = enemyChessMen.Where(e => e.Piece != null).Any(c => c.GetMoveVariantsForCurrentPiece().Any(v => v.Row == kingPiece.GetRow() && v.Column == kingPiece.GetColumn()));
+                if (!isShah)
+                    finalVariants.Add(variant);
+                RestoreFakeMove(fakeMove);
+            }
+
+            if (chessMan is King && finalVariants.Count == 0)
+            {
+                if (!AnyCheckCanMove(chessManType == TypePlayer.Black ? TypePlayer.White : TypePlayer.Black))
+                    Debug.Log("Checkmate!!!!!");
+
+                
+            }
+            
+            foreach (var variant in finalVariants)
             {
                 var pieceVariant = _pieces[variant.Row, variant.Column];
                 var pieceChessMan = pieceVariant.GetChessMan();
@@ -149,6 +219,46 @@ namespace UBoard
                     }
                 }
             }
+        }
+
+        private bool AnyCheckCanMove(TypePlayer typePlayer)
+        {
+            var chessMen = GetOtherAliveChessMen(typePlayer).Where(c => c.GetType() != typeof(King)).ToArray();
+            foreach (var chessMan in chessMen)
+            {
+                if (!HasCanMoveVariants(chessMan.Piece))
+                    return false;
+            }
+
+            return false;
+        }
+
+        private bool HasCanMoveVariants(Piece piece)
+        {
+            var chessMan = piece.GetChessMan();
+            var variants = chessMan.GetMoveVariants(piece.GetRow(), piece.GetColumn(), _pieces, false);
+            var chessManType = chessMan.GetPlayer().GetTypePlayer();
+            
+            var enemyChessMen = GetOtherAliveChessMen(chessManType).Where(c => c.GetType() != typeof(King)).ToArray();
+
+            var finalVariants = new List<Variant>();
+            
+            foreach (var variant in variants)
+            {
+                var pieceVariant = _pieces[variant.Row, variant.Column];
+                var pieceChessMan = pieceVariant.GetChessMan();
+                if (pieceChessMan && pieceChessMan.GetPlayer().GetTypePlayer() == chessManType)
+                    continue;
+
+                var fakeMove = FakeMoveChessMan(_pieces[variant.Row, variant.Column]);
+                var kingPiece = _pieces.OfType<Piece>().First(p => p.GetChessMan() is King k && k.GetPlayer().GetTypePlayer() == chessMan.GetPlayer().GetTypePlayer());
+                var isShah = enemyChessMen.Where(e => e.Piece != null).Any(c => c.GetMoveVariantsForCurrentPiece().Any(v => v.Row == kingPiece.GetRow() && v.Column == kingPiece.GetColumn()));
+                if (!isShah)
+                    finalVariants.Add(variant);
+                RestoreFakeMove(fakeMove);
+            }
+
+            return finalVariants.Count != 0;
         }
 
         public IEnumerable<ChessMan> GetOtherAliveChessMen(TypePlayer typePlayer)

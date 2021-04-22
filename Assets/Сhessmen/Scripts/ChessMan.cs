@@ -14,7 +14,7 @@ namespace Сhessmen
         protected Player Player;
         public Piece Piece { get; set; }
 
-        public abstract List<Variants> GetMoveVariants(int getRow, int getColumn, Piece[,] pieces, bool forKing);
+        public abstract List<Variant> GetMoveVariants(int getRow, int getColumn, Piece[,] pieces, bool forKing);
 
         public void SetPlayer(Player player)
         {
@@ -23,15 +23,19 @@ namespace Сhessmen
 
         public Player GetPlayer() => Player;
 
-        public List<Variants> GetMoveVariantsForCurrentPiece() => GetMoveVariants(Piece.GetRow(), Piece.GetColumn(),
-            Inspector.Instance.BoardInstance.GetPieces(), true);
+        public List<Variant> GetMoveVariantsForCurrentPiece()
+        {
+            return GetMoveVariants(Piece.GetRow(), Piece.GetColumn(),
+                Inspector.Instance.BoardInstance.GetPieces(), true);
+        }
 
-        protected bool CanDestroy(Piece[,] pieces, int row, int column, List<Variants> variants)
+        protected bool CanDestroy(Piece[,] pieces, int row, int column, List<Variant> variants)
         {
             var piece = pieces[row, column];
             if (piece.GetChessMan())
             {
-                variants.Add(new Variants(row, column));
+                if (piece.GetChessMan().Player.GetTypePlayer() != Player.GetTypePlayer())
+                    variants.Add(new Variant(row, column));
                 return true;
             }
 

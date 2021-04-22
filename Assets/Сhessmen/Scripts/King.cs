@@ -8,9 +8,9 @@ namespace Сhessmen
 {
     public class King : ChessMan
     {
-        public override List<Variants> GetMoveVariants(int getRow, int getColumn, Piece[,] pieces, bool forKing)
+        public override List<Variant> GetMoveVariants(int getRow, int getColumn, Piece[,] pieces, bool forKing)
         {
-            var variants = new List<Variants>();
+            var variants = new List<Variant>();
 
             for (var (r, c) = (getRow + 1, getColumn + 1); r < 8 && c < 8; r++, c++)
             {
@@ -20,7 +20,7 @@ namespace Сhessmen
                 if(CanDestroy(pieces, r, c, variants))
                     break;
                 
-                variants.Add(new Variants(r, c));
+                variants.Add(new Variant(r, c));
                 break;
             }
             
@@ -32,7 +32,7 @@ namespace Сhessmen
                 if(CanDestroy(pieces, r, c, variants))
                     break;
                 
-                variants.Add(new Variants(r, c));
+                variants.Add(new Variant(r, c));
                 break;
             }
             
@@ -44,7 +44,7 @@ namespace Сhessmen
                 if(CanDestroy(pieces, r, c, variants))
                     break;
                 
-                variants.Add(new Variants(r, c));
+                variants.Add(new Variant(r, c));
                 break;
             }
             
@@ -56,7 +56,7 @@ namespace Сhessmen
                 if(CanDestroy(pieces, r, c, variants))
                     break;
                 
-                variants.Add(new Variants(r, c));
+                variants.Add(new Variant(r, c));
                 break;
             }
             
@@ -68,7 +68,7 @@ namespace Сhessmen
                 if(CanDestroy(pieces, getRow, i, variants))
                     break;
 
-                variants.Add(new Variants(getRow, i));
+                variants.Add(new Variant(getRow, i));
                 break;
             }
             
@@ -80,7 +80,7 @@ namespace Сhessmen
                 if(CanDestroy(pieces, getRow, i, variants))
                     break;
                 
-                variants.Add(new Variants(getRow, i));
+                variants.Add(new Variant(getRow, i));
                 break;
             }
             
@@ -92,7 +92,7 @@ namespace Сhessmen
                 if(CanDestroy(pieces, i, getColumn, variants))
                     break;
 
-                variants.Add(new Variants(i, getColumn));
+                variants.Add(new Variant(i, getColumn));
                 break;
             }
             
@@ -104,7 +104,7 @@ namespace Сhessmen
                 if(CanDestroy(pieces, i, getColumn, variants))
                     break;
                 
-                variants.Add(new Variants(i, getColumn));
+                variants.Add(new Variant(i, getColumn));
                 break;
             }
 
@@ -113,9 +113,25 @@ namespace Сhessmen
 
         private bool CheckOnShah(int row, int column)
         {
+#if DEBUG
+            var board = Inspector.Instance.BoardInstance;
+            var enemyChessMen = board.GetOtherAliveChessMen(Player.GetTypePlayer()).Where(c => c.GetType() != typeof(King)).ToList();
+            Debug.Log($"CheckOnShah for row - {row}, column - {column}");
+            foreach (var chessMan in enemyChessMen)
+            {
+                Debug.Log($"ChessMan - {chessMan.GetType().Name}. Move variants:");
+                foreach (var variant in chessMan.GetMoveVariantsForCurrentPiece())
+                {
+                    Debug.Log($"Row - {variant.Row}, Column - {variant.Column}");
+                }
+            }
+            return enemyChessMen.Any(c => c.GetMoveVariantsForCurrentPiece().Any(v => v.Row == row && v.Column == column));
+#else 
             var board = Inspector.Instance.BoardInstance;
             var enemyChessMen = board.GetOtherAliveChessMen(Player.GetTypePlayer()).Where(c => c.GetType() != typeof(King));
             return enemyChessMen.Any(c => c.GetMoveVariantsForCurrentPiece().Any(v => v.Row == row && v.Column == column));
+#endif
+
         }
     }
 }
